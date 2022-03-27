@@ -1,41 +1,35 @@
 package pro.sky.homework_11.storeController;
 
-import org.springframework.context.annotation.Scope;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pro.sky.homework_11.Cart.Cart;
+import pro.sky.homework_11.Interface.CartService;
 
 import java.util.List;
 
-@Scope("session")
+
 @RestController
 @RequestMapping("/order")
 public class CartController {
 
-    public final Cart cart;
+    private final CartService cartService;
 
-    public CartController(Cart cart) {
-        this.cart = cart;
-    }
-
-
-    @GetMapping("/hello")
-    public int hello() {
-        return cart.id();
+    public CartController(@Qualifier("regularCart") CartService cartService) {
+        this.cartService = cartService;
     }
 
     @GetMapping("/add")
-    public String add(@RequestParam("id") String productIDs) {
-        for (var id : productIDs.split(",")) {
-            cart.add(Integer.parseInt(id));
-        }
-        return "Добывлено в корзину " + productIDs + " в корзину  " + cart.id();
+    public String add(@RequestParam("id") List<Integer> productIDs) {
+        cartService.add(productIDs);
+        return "Добавлено в корзину " + productIDs + " в корзину  " + cartService.cartID();
     }
 
     @GetMapping("/get")
     public List get() {
-        return cart.get();
+        return cartService.get();
     }
+
 }
